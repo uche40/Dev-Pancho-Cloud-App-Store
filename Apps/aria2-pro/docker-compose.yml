@@ -1,19 +1,31 @@
 name: aria2-pro
 services:
+  ariang:
+    container_name: aria-ng
+    image: p3terx/ariang:latest
+    logging:
+      options:
+        max-size: "1m"
+    restart: unless-stopped
+    ports:
+      - 6880:6880
   aria2-pro:
-    environment:
-      LISTEN_PORT: "6888"
-      PGID: $PGID
-      PUID: $PUID
-      RPC_PORT: "6800"
-      RPC_SECRET: "TOKEN"
-    image: p3terx/aria2-pro:latest
     container_name: aria2-pro
     deploy:
       resources:
         reservations:
-          memory: "64M"
-    network_mode: bridge
+          memory: "67108864"
+        limits:
+          memory: 7802M
+    environment:
+      - LISTEN_PORT=6888
+      - PGID=1000
+      - PUID=1000
+      - RPC_PORT=6800
+      - RPC_SECRET=TOKEN
+    image: p3terx/aria2-pro:latest
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/Cp0204/CasaOS-AppStore-Play@main/Apps/aria2-pro/icon.png
     ports:
       - target: 6800
         published: "6800"
@@ -33,45 +45,75 @@ services:
         source: /DATA/AppData/aria2-pro/config
         target: /config
     x-casaos:
-        envs:
-            - container: RPC_SECRET
-              description:
-                en_us: RPC secret key setting, which is the password required to be filled in when connecting to the WebUI, and only recommended to use letters and numbers.
-            - container: RPC_PORT
-              description:
-                en_us: RPC port setting
-            - container: LISTEN_PORT
-              description:
-                en_us: BT listening port (TCP), DHT listening port (UDP) setting
-        ports:
-            - container: "6800"
-              description:
-                en_us: RPC communication port mapping.
-            - container: "6888"
-              description:
-                en_us: BT listening port (TCP) mapping, which is the port defined in the listen-port option in Aria2 configuration.
-            - container: "6888"
-              description:
-                en_us: DHT listening port (UDP) mapping, which is the port defined in the dht-listen-port option in Aria2 configuration.
+      envs:
+        - container: RPC_SECRET
+          description:
+            en_us: RPC secret key setting, which is the password required to be filled in
+              when connecting to the WebUI, and only recommended to use letters
+              and numbers.
+            zh_cn: RPC 密钥设置，即 WebUI 连接时需要填写的密码，只建议使用字母和数字。
+        - container: RPC_PORT
+          description:
+            en_us: RPC port setting
+            zh_cn: RPC 端口设置
+        - container: LISTEN_PORT
+          description:
+            en_us: BT listening port (TCP), DHT listening port (UDP) setting
+            zh_cn: BT 监听端口（TCP）、DHT 监听端口（UDP）设置
+      ports:
+        - container: "6800"
+          description:
+            en_us: RPC communication port mapping.
+            zh_cn: RPC 通信端口映射。
+        - container: "6888"
+          description:
+            en_us: BT listening port (TCP) mapping, which is the port defined in the
+              listen-port option in Aria2 configuration.
+            zh_cn: BT 监听端口（TCP）映射，即 Aria2 配置中 listen-port 选项定义的端口。
+        - container: "6888"
+          description:
+            en_us: DHT listening port (UDP) mapping, which is the port defined in the
+              dht-listen-port option in Aria2 configuration.
+            zh_cn: DHT 监听端口（UDP）映射，即 Aria2 配置中 dht-listen-port 选项定义的端口。
+    devices: []
+    cap_add: []
+    command: []
+    network_mode: bridge
+    privileged: false
+    hostname: aria2-pro
+    cpu_shares: 90
 x-casaos:
   architectures:
     - amd64
     - arm
     - arm64
-  author: Mypancho.com
+  author: Cp0204
   category: Downloader
   description:
-    en_us: Aria2 is currently the most powerful and versatile download tool. It supports various downloading protocols such as BT, magnet, HTTP, and FTP, and is commonly used as a server for offline downloading. https://p3terx.com/archives/docker-aria2-pro.html
+    en_us: Aria2 is currently the most powerful and versatile download tool. It
+      supports various downloading protocols such as BT, magnet, HTTP, and FTP,
+      and is commonly used as a server for offline downloading.
+      [DOC](https://p3terx.com/archives/docker-aria2-pro.html)
+    zh_cn: Aria2 是目前最强大的全能型下载工具，它支持 BT、磁力、HTTP、FTP
+      等下载协议，常用做离线下载的服务端。[文档](https://p3terx.com/archives/docker-aria2-pro.html)
   developer: P3TERX
-  icon: https://cdn.jsdelivr.net/gh/uche40/Dev-Pancho-Cloud-App-Store@main/Apps/aria2-pro/icon.png
-  screenshot_link:
-    - https://cdn.jsdelivr.net/gh/uche40/Dev-Pancho-Cloud-App-Store@main/Apps/aria2-pro/screenshot-1.png
-    - https://cdn.jsdelivr.net/gh/uche40/Dev-Pancho-Cloud-App-Store@main/Apps/aria2-pro/screenshot-2.png
-    - https://cdn.jsdelivr.net/gh/uche40/Dev-Pancho-Cloud-App-Store@main/Apps/aria2-pro/screenshot-3.png
-  thumbnail: https://cdn.jsdelivr.net/gh/uche40/Dev-Pancho-Cloud-App-Store@main/Apps/aria2-pro/thumbnail.png
+  hostname: ariang.mayswind.net
+  icon: https://cdn.jsdelivr.net/gh/Cp0204/CasaOS-AppStore-Play@main/Apps/aria2-pro/icon.png
+  index: /latest
   main: aria2-pro
+  port_map: ""
+  scheme: http
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/Cp0204/CasaOS-AppStore-Play@main/Apps/aria2-pro/thumbnail.png
+  store_app_id: aria2-pro
   tagline:
-    en_us: Versatile download tool supporting multiple protocols for offline downloading.
+    en_us: A better Aria2 Docker container
+    zh_cn: 更好用的 Aria2 Docker 容器
+  thumbnail: https://cdn.jsdelivr.net/gh/Cp0204/CasaOS-AppStore-Play@main/Apps/aria2-pro/thumbnail.png
   tips:
+    before_install:
+      en_us: Aria2 with AriaNg, password is the TOKEN.
+      zh_cn: Aria2 配合 AriaNg 使用,密码是 TOKEN。
   title:
     en_us: Aria2 Pro
+    custom: ""
